@@ -12,12 +12,50 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import rclpy._rclpy__rmw_opensplice_cpp as _rclpy
+import importlib
+import os
+
+import ament_index_python
 
 from rclpy.node import Node
 
+rmw_implementations = sorted(ament_index_python.get_resources('rmw_implementation').keys())
+
+
+def _load_rmw(rmw_implementation):
+    module_name = '._rclpy__{rmw_implementation}'.format(
+        rmw_implementation=rmw_implementation,
+    )
+    return importlib.import_module(module_name, package='rclpy')
+
+
+global _rclpy
+try:
+    _rclpy
+except NameError:
+    _rclpy = None
+if _rclpy is None:
+    for rmw_implementation in rmw_implementations:
+        rmw_module = _load_rmw(rmw_implementation)
+        if rmw_module is not None:
+            _rclpy = rmw_module
+            break
+
+
+def set_rmw_implementation(rmw_implementation):
+    assert rmw_implementation.rclpy_get_implementation_identifier(), \
+        'Must be a valid RMW implementation'
+    global _rclpy
+    _rclpy = rmw_implementation
+
 
 def init(args):
+    rclpy_rmw_env = os.getenv('RCLPY_IMPLEMENTATION')
+    if rclpy_rmw_env is not None:
+        global _rclpy
+        _rclpy = _load_rmw(rclpy_rmw_env)
+
+    assert _rclpy is not None, 'Could not load any RMW implementation'
     return _rclpy.rclpy_init(args)
 
 
