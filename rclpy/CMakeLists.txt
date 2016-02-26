@@ -87,7 +87,7 @@ if(AMENT_ENABLE_TESTING)
   find_package(ament_lint_auto REQUIRED)
   ament_lint_auto_find_test_dependencies()
 
-  rosidl_generator_py_find_valid_typesupport(_typesupport_impls)
+  rosidl_generator_py_get_typesupports(_typesupport_impls)
   if(NOT "${_typesupport_impls} " STREQUAL " ")
     ament_add_nose_test(rclpytests test
       WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
