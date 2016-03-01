@@ -211,7 +211,7 @@ rclpy_wait_set_init(PyObject * Py_UNUSED(self), PyObject * args)
 
   rcl_wait_set_t * wait_set = (rcl_wait_set_t *)PyCapsule_GetPointer(pywait_set, NULL);
 
-  // TODO Services.
+  // TODO(jacquelinekay) Services.
   rcl_ret_t ret = rcl_wait_set_init(
     wait_set, number_of_subscriptions, number_of_guard_conditions, number_of_timers,
     0, 0, rcl_get_default_allocator());
