@@ -90,6 +90,29 @@ rclpy_init(PyObject * Py_UNUSED(self), PyObject * Py_UNUSED(args))
  *         Capsule pointing to the pointer of the created rcl_node_t * structure otherwise
  */
 static PyObject *
+rclpy_get_node_names(PyObject * Py_UNUSED(self), PyObject * Py_UNUSED(args))
+{
+  rcl_strings_t str = rcl_get_zero_initialized_strings();
+  
+  rcl_ret_t ret = rcl_get_node_names(&str);
+  if (ret != RCL_RET_OK) {
+    PyErr_Format(PyExc_RuntimeError,
+      "Failed to get node names: %s", rcl_get_error_string_safe());
+    return NULL;
+  }
+
+  PyObject* list = PyList_New(str.count);
+  int i;
+  for(i = 0; i < str.count; i++)
+      PyList_SetItem(list, i, Py_BuildValue("s", str.data[i]));
+
+  //free memory
+  rcl_strings_fini(&str);
+
+  return list;
+}
+
+static PyObject *
 rclpy_create_node(PyObject * Py_UNUSED(self), PyObject * args)
 {
   const char * node_name;
@@ -1425,6 +1448,8 @@ rclpy_get_topic_names_and_types(PyObject * Py_UNUSED(self), PyObject * args)
 static PyMethodDef rclpy_methods[] = {
   {"rclpy_init", rclpy_init, METH_VARARGS,
    "Initialize RCL."},
+  {"rclpy_get_node_names", rclpy_get_node_names, METH_VARARGS,
+   "Get ROS node names."},   
   {"rclpy_create_node", rclpy_create_node, METH_VARARGS,
    "Create a Node."},
   {"rclpy_create_publisher", rclpy_create_publisher, METH_VARARGS,
