@@ -54,6 +54,7 @@ def _rosnode_cmd_list(argv):
     """
     Implements rosnode 'list' command.
     """
+    start = time.clock()
     args = argv[2:]
     parser = OptionParser(usage="usage: %prog list", prog=NAME)
     parser.add_option("-u",
@@ -71,14 +72,16 @@ def _rosnode_cmd_list(argv):
     elif len(args) == 1:
         #namespace = rosgraph.names.script_resolve_name('rostopic', args[0])
         pass
+    print("(rclpy)-----> Option parsing: "+str(time.clock() - start))
 
     # In ROS 1, the rosnode list invocation was performed using:
     #    rosnode_listnodes(namespace=namespace, list_uri=options.list_uri, list_all=options.list_all)
 
     result = rclpy.get_node_names()
+    print("(rclpy)-----> rclpy.get_node_names: "+str(time.clock() - start))
+
     for node in result:
         print(node)
-
 
 def _fullusage(return_error=True):
     """
