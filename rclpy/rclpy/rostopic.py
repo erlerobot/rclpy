@@ -36,14 +36,32 @@ def _rostopic_cmd_hz(argv):
 
 # TODO implement
 def _rostopic_cmd_type(argv):
-    print("NOT IMPLEMENTED\n")
+    args = argv[2:]
+    from optparse import OptionParser
+    parser = OptionParser(usage="usage: %prog type /topic", prog=NAME)
+    (options, args) = parser.parse_args(args)
+    if len(args) < 1:
+        parser.error("provide at least one topic")
+
+    target_topic = args[0]
+    target_type = ''
+    result = rclpy.get_remote_topic_names_and_types()
+    for i in range(len(result[0])):
+        topic_name = result[0][i]
+        topic_type = result[1][i]
+        if target_topic == topic_name:
+            target_type = topic_type
+    if target_type != '':
+        print(target_type)
     sys.exit(0)
 
 def _rostopic_cmd_list(argv):
     result = rclpy.get_remote_topic_names_and_types()
-    for topic in result:
-        print(topic)
-    sys.exit(0)
+    for i in range(len(result[0])):
+        topic_name = result[0][i]
+        topic_type = result[1][i]
+        print(topic_name)
+        #print(topic_name+" (type: "+topic_type+")")
 
 # TODO implement
 def _rostopic_cmd_info(argv):
@@ -153,14 +171,23 @@ def _rostopic_cmd_echo(argv):
 def _fullusage():
     print("""rostopic is a command-line tool for printing information about ROS Topics.
 Commands:
+<<<<<<< HEAD
 \trostopic bw\tdisplay bandwidth used by topic
 \trostopic delay\tdisplay delay of topic from timestamp in header
 \trostopic echo module message topic\tprint messages to screen
 \trostopic find\tfind topics by type
 \trostopic hz\tdisplay publishing rate of topic    
 \trostopic info\tprint information about active topic
+=======
+\trostopic bw\tdisplay bandwidth used by topic (NOT IMPLEMENTED)
+\trostopic delay\tdisplay delay of topic from timestamp in header (NOT IMPLEMENTED)
+\trostopic echo\tprint messages to screen
+\trostopic find\tfind topics by type (NOT IMPLEMENTED)
+\trostopic hz\tdisplay publishing rate of topic (NOT IMPLEMENTED)
+\trostopic info\tprint information about active topic (NOT IMPLEMENTED)
+>>>>>>> f84a1ff5bfe1b2b5d0566e5612262ecdd89ae452
 \trostopic list\tlist active topics
-\trostopic pub\tpublish data to topic
+\trostopic pub\tpublish data to topic (NOT IMPLEMENTED)
 \trostopic type\tprint topic type
 Type rostopic <command> -h for more detailed usage, e.g. 'rostopic echo -h'
 """)
